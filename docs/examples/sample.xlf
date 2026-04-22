@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:2.0" version="2.1" srcLang="en" trgLang="es">
+  <file id="f1">
+    <unit id="u1">
+      <segment id="s1" state="translated">
+        <source>Hello, world!</source>
+        <target>¡Hola, mundo!</target>
+      </segment>
+    </unit>
+    <unit id="u2">
+      <segment id="s2" state="initial">
+        <source>Welcome to TypesXLIFF.</source>
+        <target>Bienvenido a TypesXLIFF.</target>
+      </segment>
+    </unit>
+    <unit id="u3">
+      <notes>
+        <note id="n1" appliesTo="source">Placeholder — replace with your own XLIFF content.</note>
+      </notes>
+      <segment id="s3" state="initial">
+        <source>This is a placeholder file.</source>
+      </segment>
+    </unit>
+  </file>
+</xliff>

@@ -1,0 +1,52 @@
+{
+  "name": "typesxliff",
+  "productName": "TypesXLIFF",
+  "version": "0.1.0",
+  "description": "TypeScript library for creating, loading, querying, and writing XLIFF 2.x documents",
+  "keywords": [
+    "XLIFF",
+    "TypeScript",
+    "XML",
+    "localization",
+    "translation"
+  ],
+  "scripts": {
+    "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+    "build": "npm run clean && tsc"
+  },
+  "engines": {
+    "node": ">=24.14.0"
+  },
+  "author": {
+    "name": "Rodolfo M. Raya",
+    "url": "https://maxprograms.com",
+    "email": "rmraya@maxprograms.com"
+  },
+  "license": "SEE LICENSE.md",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "/dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rmraya/TypesXLIFF.git"
+  },
+  "dependencies": {
+    "typesbcp47": "^1.20.0",
+    "typesxml": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.12.2",
+    "typescript": "^6.0.3"
+  }
+}
