@@ -1,6 +1,6 @@
 # TypesXLIFF
 
-TypesXLIFF is a TypeScript XLIFF parser and writer for Node.js. It supports XLIFF 2.0–2.2, JSON conversion, and a fully typed object model.
+TypesXLIFF is a TypeScript / Node.js library for parsing, generating, and validating XLIFF 2.x files (2.0, 2.1 and 2.2). It includes a fully typed object model and JSON conversion for processing translation and localization data.
 
 ## Why TypesXLIFF
 
