@@ -1,7 +1,5 @@
 # JSON Conversion
 
-> **Note:** The JSON conversion classes (`XliffToJson` and `JsonToXliff`) are new and have not yet been fully tested with real-world XLIFF files. Use with caution in production until test coverage is in place.
-
 TypesXLIFF supports lossless round-trip conversion between XLIFF documents and JSON, powered by the [TypesXML](https://github.com/rmraya/TypesXML) JSON conversion API.
 
 ## Why JSON?

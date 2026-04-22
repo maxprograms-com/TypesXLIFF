@@ -5,7 +5,7 @@ TypesXLIFF is a TypeScript library for creating, parsing, and writing XLIFF 2.x 
 ## Requirements
 
 - Node.js 24.14.0 or later
-- TypeScript 5.x or later
+- TypeScript 6.x or later
 
 ## Installation
 
