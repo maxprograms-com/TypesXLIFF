@@ -41,6 +41,7 @@ export class XliffPc implements XliffElement {
     subType?: XliffInlineSubType;
     type?: XliffInlineType;
     dir?: XliffDirection;
+    errorReason: string = '';
     readonly content: Array<string | XliffCp | XliffPh | XliffPc | XliffSc | XliffEc | XliffMrk | XliffSm | XliffEm> = [];
     readonly otherAttributes: Array<XMLAttribute> = [];
 
@@ -249,60 +250,78 @@ export class XliffPc implements XliffElement {
 
     isValid(): boolean {
         if (!XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not a valid NMTOKEN';
             return false;
         }
         if (this.canCopy !== undefined && this.canCopy !== "yes" && this.canCopy !== "no") {
+            this.errorReason = 'The @canCopy attribute value "' + this.canCopy + '" is not valid';
             return false;
         }
         if (this.canDelete !== undefined && this.canDelete !== "yes" && this.canDelete !== "no") {
+            this.errorReason = 'The @canDelete attribute value "' + this.canDelete + '" is not valid';
             return false;
         }
         if (this.canOverlap !== undefined && this.canOverlap !== "yes" && this.canOverlap !== "no") {
+            this.errorReason = 'The @canOverlap attribute value "' + this.canOverlap + '" is not valid';
             return false;
         }
         if (this.canReorder !== undefined && this.canReorder !== "yes" && this.canReorder !== "firstNo" && this.canReorder !== "no") {
+            this.errorReason = 'The @canReorder attribute value "' + this.canReorder + '" is not valid';
             return false;
         }
         if (this.copyOf !== undefined && !XMLUtils.isValidNMTOKEN(this.copyOf)) {
+            this.errorReason = 'The @copyOf attribute value "' + this.copyOf + '" is not valid';
             return false;
         }
         if (this.dataRefStart !== undefined && !XMLUtils.isValidNMTOKEN(this.dataRefStart)) {
+            this.errorReason = 'The @dataRefStart attribute value "' + this.dataRefStart + '" is not valid';
             return false;
         }
         if (this.dataRefEnd !== undefined && !XMLUtils.isValidNMTOKEN(this.dataRefEnd)) {
+            this.errorReason = 'The @dataRefEnd attribute value "' + this.dataRefEnd + '" is not valid';
             return false;
         }
         if (this.subFlowsStart !== undefined && !this.subFlowsStart.split(/\s+/).every((item) => XMLUtils.isValidNMTOKEN(item))) {
+            this.errorReason = 'The @subFlowsStart attribute value "' + this.subFlowsStart + '" is not valid';
             return false;
         }
         if (this.subFlowsEnd !== undefined && !this.subFlowsEnd.split(/\s+/).every((item) => XMLUtils.isValidNMTOKEN(item))) {
+            this.errorReason = 'The @subFlowsEnd attribute value "' + this.subFlowsEnd + '" is not valid';
             return false;
         }
         if (this.dir !== undefined && this.dir !== "ltr" && this.dir !== "rtl" && this.dir !== "auto") {
+            this.errorReason = 'The @dir attribute value "' + this.dir + '" is not valid';
             return false;
         }
         if (this.type !== undefined && this.type !== "fmt" && this.type !== "ui" && this.type !== "quote" && this.type !== "link" && this.type !== "image" && this.type !== "other") {
+            this.errorReason = 'The @type attribute value "' + this.type + '" is not valid';
             return false;
         }
         if (this.copyOf !== undefined && (this.dataRefStart !== undefined || this.dataRefEnd !== undefined)) {
+            this.errorReason = 'The @copyOf attribute value is set but @dataRefStart or @dataRefEnd is also set';
             return false;
         }
         if (this.canReorder === "no" || this.canReorder === "firstNo") {
             if (this.canCopy !== "no" || this.canDelete !== "no") {
+                this.errorReason = 'The @canReorder attribute value is "' + this.canReorder + '" but @canCopy or @canDelete is not "no"';
                 return false;
             }
         }
         if (this.subType !== undefined) {
             if (this.type === undefined) {
+                this.errorReason = 'The @subType attribute value is set but @type is not set';
                 return false;
             }
             if (!this.subType.includes(':') || this.subType.startsWith(':') || this.subType.endsWith(':')) {
+                this.errorReason = 'The @subType attribute value "' + this.subType + '" is not valid';
                 return false;
             }
             if ((this.subType === 'xlf:b' || this.subType === 'xlf:i' || this.subType === 'xlf:u' || this.subType === 'xlf:lb' || this.subType === 'xlf:pb') && this.type !== 'fmt') {
+                this.errorReason = 'The @subType attribute value "' + this.subType + '" is not valid for @type "' + this.type + '"';
                 return false;
             }
             if (this.subType === 'xlf:var' && this.type !== 'ui') {
+                this.errorReason = 'The @subType attribute value "' + this.subType + '" is not valid for @type "' + this.type + '"';
                 return false;
             }
         }
@@ -346,5 +365,9 @@ export class XliffPc implements XliffElement {
             }
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

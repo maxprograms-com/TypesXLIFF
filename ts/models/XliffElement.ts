@@ -16,6 +16,7 @@ export interface XliffElement {
 
     readonly elementName: string;
     isValid(): boolean;
+    getValidationError(): string;
     toElement(document: XMLDocument): XMLElement;
 
 }

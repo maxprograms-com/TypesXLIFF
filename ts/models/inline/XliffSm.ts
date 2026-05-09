@@ -23,6 +23,7 @@ export class XliffSm implements XliffElement {
     type?: XliffAnnotationType;
     ref?: string;
     value?: string;
+    errorReason: string = '';
     readonly otherAttributes: Array<XMLAttribute> = [];
 
     constructor(id: string) {
@@ -89,20 +90,25 @@ export class XliffSm implements XliffElement {
 
     isValid(): boolean {
         if (!XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not valid';
             return false;
         }
         if (this.translate !== undefined && this.translate !== "yes" && this.translate !== "no") {
+            this.errorReason = 'The @translate attribute value "' + this.translate + '" is not valid';
             return false;
         }
         if (this.type !== undefined && this.type !== "generic" && this.type !== "comment" && this.type !== "term") {
             if (!this.type.includes(':') || this.type.startsWith(':') || this.type.endsWith(':')) {
+                this.errorReason = 'The @type attribute value "' + this.type + '" is not valid';
                 return false;
             }
         }
         if (this.type === "comment" && this.value === undefined && this.ref === undefined) {
+            this.errorReason = 'The @type attribute value is "comment" but @value and @ref are not set';
             return false;
         }
         if (this.ref !== undefined && !isValidFragmentIdentifier(this.ref)) {
+            this.errorReason = 'The @ref attribute value "' + this.ref + '" is not a valid fragment identifier';
             return false;
         }
         return true;
@@ -126,5 +132,9 @@ export class XliffSm implements XliffElement {
             element.setAttribute(otherAttribute);
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

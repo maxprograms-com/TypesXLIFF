@@ -21,6 +21,7 @@ export class XliffIgnorable implements XliffElement {
     id?: string;
     source?: XliffSource;
     target?: XliffTarget;
+    errorReason: string = '';
 
     constructor(id?: string) {
         this.id = id;
@@ -52,9 +53,11 @@ export class XliffIgnorable implements XliffElement {
 
     isValid(): boolean {
         if (this.id !== undefined && !XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not valid';
             return false;
         }
         if (this.source === undefined) {
+            this.errorReason = 'The <ignorable> element must contain a <source> element';
             return false;
         }
         return true;
@@ -72,5 +75,9 @@ export class XliffIgnorable implements XliffElement {
             element.addElement(this.target.toElement());
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

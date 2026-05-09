@@ -27,6 +27,7 @@ export class XliffSource implements XliffElement {
     readonly elementName: string = "source";
     xmlLang?: string;
     xmlSpace?: XliffXmlSpace;
+    errorReason: string = '';
     readonly content: Array<string | XliffCp | XliffPh | XliffPc | XliffSc | XliffEc | XliffMrk | XliffSm | XliffEm> = [];
 
     getXmlLang(): string | undefined {
@@ -92,6 +93,7 @@ export class XliffSource implements XliffElement {
 
     isValid(): boolean {
         if (this.xmlSpace !== undefined && !(this.xmlSpace === "preserve" || this.xmlSpace === "default")) {
+            this.errorReason = 'The @xml:space attribute value "' + this.xmlSpace + '" is not valid';
             return false;
         }
         return true;
@@ -113,5 +115,9 @@ export class XliffSource implements XliffElement {
             }
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

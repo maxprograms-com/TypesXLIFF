@@ -27,6 +27,7 @@ export class XliffGlossEntry implements XliffElement, ModuleElement {
     definition?: XliffDefinition;
     metadata?: XliffMetadata;
     prefix?: string;
+    errorReason: string = '';
     readonly translations: Array<XliffTranslation> = [];
     readonly otherElements: Array<XMLElement> = [];
     readonly otherAttributes: Array<XMLAttribute> = [];
@@ -121,23 +122,29 @@ export class XliffGlossEntry implements XliffElement, ModuleElement {
 
     isValid(): boolean {
         if (this.id !== undefined && !XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not a valid NMTOKEN';
             return false;
         }
         if (!this.term.isValid()) {
+            this.errorReason = 'The <term> element is not valid';
             return false;
         }
         if (this.translations.length === 0 && this.definition === undefined) {
+            this.errorReason = 'At least one <translation> element or a <definition> element is required';
             return false;
         }
         for (const translation of this.translations) {
             if (!translation.isValid()) {
+                this.errorReason = 'The <translation> element is not valid';
                 return false;
             }
         }
         if (this.definition !== undefined && !this.definition.isValid()) {
+            this.errorReason = 'The <definition> element is not valid';
             return false;
         }
         if (this.metadata !== undefined && !this.metadata.isValid()) {
+            this.errorReason = 'The <metadata> element is not valid';
             return false;
         }
         return true;
@@ -176,5 +183,9 @@ export class XliffGlossEntry implements XliffElement, ModuleElement {
 
     getNamespacePrefix(): string | undefined {
         return this.prefix;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

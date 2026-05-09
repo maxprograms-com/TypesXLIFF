@@ -30,6 +30,7 @@ export class XliffDocument implements XliffElement {
     xmlSpace?: XliffXmlSpace;
     notes?: XliffNotes;
     metadata?: XliffMetadata;
+    errorReason: string = '';
     readonly files: Array<XliffFile> = [];
     readonly otherAttributes: Array<XMLAttribute> = [];
 
@@ -127,42 +128,52 @@ export class XliffDocument implements XliffElement {
 
     isValid(): boolean {
         if (!(this.version === "2.0" || this.version === "2.1" || this.version === "2.2")) {
+            this.errorReason = 'The @version attribute value "' + this.version + '" is not valid';
             return false;
         }
         if ((this.notes !== undefined || this.metadata !== undefined) && this.version !== "2.2") {
+            this.errorReason = 'The <notes> and <metadata> elements are only allowed in XLIFF 2.2 documents';
             return false;
         }
         if (this.notes !== undefined && !this.notes.isValid()) {
+            this.errorReason = 'The <notes> element is not valid: ' + this.notes.getValidationError();
             return false;
         }
         if (this.metadata !== undefined && !this.metadata.isValid()) {
+            this.errorReason = 'The <metadata> element is not valid: ' + this.metadata.getValidationError();
             return false;
         }
         for (const otherAttribute of this.otherAttributes) {
             const parts: Array<string> = otherAttribute.getName().split(':');
             if (parts.length !== 2 || !XMLUtils.isValidNMTOKEN(parts[0]) || !XMLUtils.isValidNMTOKEN(parts[1])) {
+                this.errorReason = 'The @' + otherAttribute.getName() + ' attribute value "' + otherAttribute.getValue() + '" is not valid';
                 return false;
             }
         }
         if (this.xmlSpace !== undefined && !(this.xmlSpace === 'preserve' || this.xmlSpace === 'default')) {
+            this.errorReason = 'The @xml:space attribute value "' + this.xmlSpace + '" is not valid';
             return false;
         }
         if (this.files.length === 0) {
+            this.errorReason = 'The <file> element is required';
             return false;
         }
         const ids: Set<string> = new Set<string>();
         for (const file of this.files) {
             if (ids.has(file.id)) {
+                this.errorReason = 'The @id attribute value "' + file.id + '" is not unique';
                 return false;
             }
             ids.add(file.id);
         }
         const normalizedSrcLang: string | undefined = LanguageUtils.normalizeCode(this.srcLang);
         if (normalizedSrcLang === undefined) {
+            this.errorReason = 'The @srcLang attribute value "' + this.srcLang + '" is not valid';
             return false;
         }
         const normalizedTrgLang: string | undefined = this.trgLang !== undefined ? LanguageUtils.normalizeCode(this.trgLang) : undefined;
         if (this.trgLang !== undefined && normalizedTrgLang === undefined) {
+            this.errorReason = 'The @trgLang attribute value "' + this.trgLang + '" is not valid';
             return false;
         }
         let hasTarget: boolean = false;
@@ -179,11 +190,13 @@ export class XliffDocument implements XliffElement {
                 }
                 for (const item of entry.items) {
                     if (item.source !== undefined && item.source.xmlLang !== undefined && item.source.xmlLang !== this.srcLang) {
+                        this.errorReason = 'The @xml:lang attribute value "' + item.source.xmlLang + '" in <source> element does not match the @srcLang attribute value "' + this.srcLang + '" in the <xliff> element';
                         return false;
                     }
                     if (item.target !== undefined) {
                         hasTarget = true;
                         if (item.target.xmlLang !== undefined && item.target.xmlLang !== this.trgLang) {
+                            this.errorReason = 'The @xml:lang attribute value "' + item.target.xmlLang + '" in <target> element does not match the @trgLang attribute value "' + this.trgLang + '" in the <xliff> element';
                             return false;
                         }
                     }
@@ -191,9 +204,11 @@ export class XliffDocument implements XliffElement {
             }
         }
         if (hasTarget && this.trgLang === undefined) {
+            this.errorReason = 'The @trgLang attribute is required when there are <target> elements';
             return false;
         }
         if (!hasTarget && this.trgLang !== undefined) {
+            this.errorReason = 'The @trgLang attribute must not be set when there are no <target> elements';
             return false;
         }
         return true;
@@ -245,5 +260,9 @@ export class XliffDocument implements XliffElement {
             indenter.indent(document.getRoot() as XMLElement);
         }
         XMLWriter.writeDocument(document, filePath);
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

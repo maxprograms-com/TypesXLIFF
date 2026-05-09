@@ -19,8 +19,9 @@ export class XliffMetadata implements XliffElement, ModuleElement {
 
     readonly elementName: string = "metadata";
     id?: string;
-    readonly metaGroups: Array<XliffMetaGroup> = [];
     prefix?: string;
+    errorReason: string = '';
+    readonly metaGroups: Array<XliffMetaGroup> = [];
 
     constructor(id?: string) {
         this.id = id;
@@ -49,9 +50,11 @@ export class XliffMetadata implements XliffElement, ModuleElement {
 
     isValid(): boolean {
         if (this.id !== undefined && !XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not valid';
             return false;
         }
         if (this.metaGroups.length === 0) {
+            this.errorReason = 'The <metadata> element must contain at least one <metaGroup> element';
             return false;
         }
 
@@ -67,10 +70,12 @@ export class XliffMetadata implements XliffElement, ModuleElement {
                 continue;
             }
             if (!metaGroup.isValid()) {
+                this.errorReason = 'Invalid <metaGroup> element: ' + metaGroup.getValidationError();
                 return false;
             }
             if (metaGroup.id !== undefined) {
                 if (ids.has(metaGroup.id)) {
+                    this.errorReason = 'Duplicate @id "' + metaGroup.id + '" found in <metaGroup> elements';
                     return false;
                 }
                 ids.add(metaGroup.id);
@@ -101,5 +106,9 @@ export class XliffMetadata implements XliffElement, ModuleElement {
 
     getNamespacePrefix(): string | undefined {
         return this.prefix;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

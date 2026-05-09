@@ -11,15 +11,16 @@
  *************************************************************************** ***/
 
 import { XMLElement } from "typesxml";
+import { ModuleElement } from "../moduleElement.js";
 import { XliffElement } from "../XliffElement.js";
 import type { XliffMatch } from "./XliffMatch.js";
-import { ModuleElement } from "../moduleElement.js";
 
-export class XliffMatches implements XliffElement , ModuleElement{
+export class XliffMatches implements XliffElement, ModuleElement {
 
     readonly elementName: string = "matches";
     readonly matches: Array<XliffMatch> = [];
     prefix?: string;
+    errorReason: string = '';
 
     getMatches(): Array<XliffMatch> {
         return this.matches;
@@ -36,15 +37,18 @@ export class XliffMatches implements XliffElement , ModuleElement{
 
     isValid(): boolean {
         if (this.matches.length === 0) {
+            this.errorReason = 'The <matches> element must contain at least one <match> element';
             return false;
         }
         const ids: Set<string> = new Set<string>();
         for (const match of this.matches) {
             if (!match.isValid()) {
+                this.errorReason = match.getValidationError();
                 return false;
             }
             if (match.id !== undefined) {
                 if (ids.has(match.id)) {
+                    this.errorReason = 'Duplicate @id attribute value "' + match.id + '" found';
                     return false;
                 }
                 ids.add(match.id);
@@ -64,8 +68,12 @@ export class XliffMatches implements XliffElement , ModuleElement{
     setNamespacePrefix(prefix: string): void {
         this.prefix = prefix;
     }
-    
+
     getNamespacePrefix(): string | undefined {
         return this.prefix;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

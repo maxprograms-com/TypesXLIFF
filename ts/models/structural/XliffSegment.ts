@@ -25,6 +25,7 @@ export class XliffSegment implements XliffElement {
     subState?: string;
     source?: XliffSource;
     target?: XliffTarget;
+    errorReason: string = '';
 
     constructor(id?: string) {
         this.id = id;
@@ -80,24 +81,30 @@ export class XliffSegment implements XliffElement {
 
     isValid(): boolean {
         if (this.id !== undefined && !XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not valid';
             return false;
         }
         if (this.canResegment !== undefined && !(this.canResegment === "yes" || this.canResegment === "no")) {
+            this.errorReason = 'The @canResegment attribute value "' + this.canResegment + '" is not valid';
             return false;
         }
         if (this.state !== undefined && !(this.state === "initial" || this.state === "translated" || this.state === "reviewed" || this.state === "final")) {
+            this.errorReason = 'The @state attribute value "' + this.state + '" is not valid';
             return false;
         }
         if (this.subState !== undefined) {
             if (this.state === undefined) {
+                this.errorReason = 'The @subState attribute is defined but @state is not';
                 return false;
             }
             const parts: Array<string> = this.subState.split(':');
             if (parts.length !== 2 || !XMLUtils.isValidNMTOKEN(parts[0]) || !XMLUtils.isValidNMTOKEN(parts[1])) {
+                this.errorReason = 'The @subState attribute value "' + this.subState + '" is not valid';
                 return false;
             }
         }
         if (this.state !== undefined && this.state !== 'initial' && this.target === undefined) {
+            this.errorReason = 'The <segment> element must contain a <target> element when @state is not "initial"';
             return false;
         }
         return true;
@@ -124,5 +131,9 @@ export class XliffSegment implements XliffElement {
             element.addElement(this.target.toElement());
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

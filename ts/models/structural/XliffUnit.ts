@@ -40,6 +40,7 @@ export class XliffUnit implements XliffElement {
     glossary?: XliffGlossary;
     metadata?: XliffMetadata;
     originalData?: XliffOriginalData;
+    errorReason: string = '';
     readonly items: Array<XliffSegment | XliffIgnorable> = [];
     readonly otherElements: Array<XMLElement> = [];
     readonly otherAttributes: Array<XMLAttribute> = [];
@@ -224,48 +225,60 @@ export class XliffUnit implements XliffElement {
 
     isValid(): boolean {
         if (!XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not valid';
             return false;
         }
         if (this.canResegment !== undefined && !(this.canResegment === 'yes' || this.canResegment === 'no')) {
+            this.errorReason = 'The @canResegment attribute value "' + this.canResegment + '" is not valid';
             return false;
         }
         if (this.translate !== undefined && !(this.translate === 'yes' || this.translate === 'no')) {
+            this.errorReason = 'The @translate attribute value "' + this.translate + '" is not valid';
             return false;
         }
         if (this.srcDir !== undefined && !(this.srcDir === 'ltr' || this.srcDir === 'rtl' || this.srcDir === 'auto')) {
+            this.errorReason = 'The @srcDir attribute value "' + this.srcDir + '" is not valid';
             return false;
         }
         if (this.trgDir !== undefined && !(this.trgDir === 'ltr' || this.trgDir === 'rtl' || this.trgDir === 'auto')) {
+            this.errorReason = 'The @trgDir attribute value "' + this.trgDir + '" is not valid';
             return false;
         }
         if (this.type !== undefined) {
             const parts: Array<string> = this.type.split(':');
             if (parts.length !== 2 || !XMLUtils.isValidNMTOKEN(parts[0]) || !XMLUtils.isValidNMTOKEN(parts[1])) {
+                this.errorReason = 'The @type attribute value "' + this.type + '" is not valid';
                 return false;
             }
         }
         for (const otherAttribute of this.otherAttributes) {
             const parts: Array<string> = otherAttribute.getName().split(':');
             if (parts.length !== 2 || !XMLUtils.isValidNMTOKEN(parts[0]) || !XMLUtils.isValidNMTOKEN(parts[1])) {
+                this.errorReason = 'The @' + otherAttribute.getName() + ' attribute value "' + otherAttribute.getValue() + '" is not valid';
                 return false;
             }
         }
         if (this.xmlSpace !== undefined && !(this.xmlSpace === 'preserve' || this.xmlSpace === 'default')) {
+            this.errorReason = 'The @xml:space attribute value "' + this.xmlSpace + '" is not valid';
             return false;
         }
         if (this.matches !== undefined && !this.matches.isValid()) {
+            this.errorReason = this.matches.getValidationError();
             return false;
         }
         if (this.glossary !== undefined && !this.glossary.isValid()) {
+            this.errorReason = this.glossary.getValidationError();
             return false;
         }
         if (this.metadata !== undefined && !this.metadata.isValid()) {
+            this.errorReason = this.metadata.getValidationError();
             return false;
         }
         if (this.originalData !== undefined) {
             const ids: Set<string> = new Set<string>();
             for (const data of this.originalData.dataItems) {
                 if (ids.has(data.id)) {
+                    this.errorReason = 'The <originalData> element contains duplicate @id attribute value "' + data.id + '"';
                     return false;
                 }
                 ids.add(data.id);
@@ -278,6 +291,7 @@ export class XliffUnit implements XliffElement {
                     continue;
                 }
                 if (noteIds.has(note.id)) {
+                    this.errorReason = 'The <notes> element contains duplicate @id attribute value "' + note.id + '"';
                     return false;
                 }
                 noteIds.add(note.id);
@@ -289,6 +303,7 @@ export class XliffUnit implements XliffElement {
                 continue;
             }
             if (itemIds.has(item.id)) {
+                this.errorReason = 'The <items> element contains duplicate @id attribute value "' + item.id + '"';
                 return false;
             }
             itemIds.add(item.id);
@@ -301,14 +316,17 @@ export class XliffUnit implements XliffElement {
             }
             const order: number = typeof item.target.order === "number" ? item.target.order : Number(item.target.order);
             if (orders.has(order) || order > maxOrder) {
+                this.errorReason = 'The <items> element contains duplicate or invalid @order attribute value "' + item.target.order + '"';
                 return false;
             }
             orders.add(order);
         }
         if (this.items.length === 0) {
+            this.errorReason = 'The <items> element must contain at least one item';
             return false;
         }
         if (!this.items.some((item) => item.elementName === 'segment')) {
+            this.errorReason = 'The <items> element must contain at least one <segment> element';
             return false;
         }
         return true;
@@ -363,5 +381,9 @@ export class XliffUnit implements XliffElement {
             element.addElement(item.toElement());
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

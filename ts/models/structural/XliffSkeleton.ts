@@ -18,6 +18,7 @@ export class XliffSkeleton implements XliffElement {
     readonly elementName: string = "skeleton";
     href?: string;
     readonly content: Array<string | XMLElement> = [];
+    errorReason: string = '';
 
     constructor(href?: string) {
         this.href = href;
@@ -51,9 +52,11 @@ export class XliffSkeleton implements XliffElement {
     isValid(): boolean {
         const hasContent: boolean = this.content.some((item) => typeof item === "string" ? item.length > 0 : true);
         if (hasContent && this.href !== undefined) {
+            this.errorReason = 'The <skeleton> element cannot contain content when the @href attribute is defined';
             return false;
         }
         if (!hasContent && this.href === undefined) {
+            this.errorReason = 'The <skeleton> element must contain content or have the @href attribute defined';
             return false;
         }
         return true;
@@ -72,5 +75,9 @@ export class XliffSkeleton implements XliffElement {
             }
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

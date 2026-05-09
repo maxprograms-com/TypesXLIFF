@@ -20,6 +20,7 @@ export class XliffMeta implements XliffElement, ModuleElement {
     type: string;
     text: string = '';
     prefix?: string;
+    errorReason: string = '';
 
     constructor(type: string) {
         this.type = type;
@@ -47,6 +48,7 @@ export class XliffMeta implements XliffElement, ModuleElement {
 
     isValid(): boolean {
         if (this.type === undefined) {
+            this.errorReason = 'The @type attribute is required';
             return false;
         }
         return true;
@@ -65,5 +67,9 @@ export class XliffMeta implements XliffElement, ModuleElement {
 
     getNamespacePrefix(): string | undefined {
         return this.prefix;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;    
     }
 }

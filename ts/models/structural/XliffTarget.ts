@@ -28,6 +28,7 @@ export class XliffTarget implements XliffElement {
     xmlLang?: string;
     xmlSpace?: XliffXmlSpace;
     order?: number | string;
+    errorReason: string = '';
     readonly content: Array<string | XliffCp | XliffPh | XliffPc | XliffSc | XliffEc | XliffMrk | XliffSm | XliffEm> = [];
 
     getXmlLang(): string | undefined {
@@ -101,11 +102,13 @@ export class XliffTarget implements XliffElement {
 
     isValid(): boolean {
         if (this.xmlSpace !== undefined && !(this.xmlSpace === "preserve" || this.xmlSpace === "default")) {
+            this.errorReason = 'The @xml:space attribute value "' + this.xmlSpace + '" is not valid';
             return false;
         }
         if (this.order !== undefined) {
             const order: number = typeof this.order === "number" ? this.order : Number(this.order);
             if (!Number.isInteger(order) || order <= 0) {
+                this.errorReason = 'The @order attribute value "' + this.order + '" is not valid';
                 return false;
             }
         }
@@ -131,5 +134,9 @@ export class XliffTarget implements XliffElement {
             }
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

@@ -17,6 +17,7 @@ export class XliffEm implements XliffElement {
 
     readonly elementName: string = "em";
     startRef: string;
+    errorReason: string = '';
 
     constructor(startRef: string) {
         this.startRef = startRef;
@@ -31,12 +32,20 @@ export class XliffEm implements XliffElement {
     }
 
     isValid(): boolean {
-        return XMLUtils.isValidNMTOKEN(this.startRef);
+        if (!XMLUtils.isValidNMTOKEN(this.startRef)) {
+            this.errorReason = 'The @startRef attribute value "' + this.startRef + '" is not a valid NMTOKEN';
+            return false;
+        }
+        return true;
     }
 
     toElement(): XMLElement {
         const element: XMLElement = new XMLElement(this.elementName);
         element.setAttribute(new XMLAttribute('startRef', this.startRef));
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

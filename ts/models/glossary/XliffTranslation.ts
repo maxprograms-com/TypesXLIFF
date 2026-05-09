@@ -22,6 +22,7 @@ export class XliffTranslation implements XliffElement, ModuleElement {
     ref?: string;
     source?: string;
     prefix?: string;
+    errorReason: string = '';
     readonly otherAttributes: Array<XMLAttribute> = [];
 
     constructor(text?: string) {
@@ -86,6 +87,7 @@ export class XliffTranslation implements XliffElement, ModuleElement {
 
     isValid(): boolean {
         if (this.id !== undefined && !XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not a valid NMTOKEN';
             return false;
         }
         return true;
@@ -112,8 +114,12 @@ export class XliffTranslation implements XliffElement, ModuleElement {
     setNamespacePrefix(prefix: string): void {
         this.prefix = prefix;
     }
-    
+
     getNamespacePrefix(): string | undefined {
         return this.prefix;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

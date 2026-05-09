@@ -16,6 +16,7 @@ import type { XliffData } from "./XliffData.js";
 
 export class XliffOriginalData implements XliffElement {
 
+    errorReason: string = '';
     readonly elementName: string = "originalData";
     readonly dataItems: Array<XliffData> = [];
 
@@ -34,6 +35,7 @@ export class XliffOriginalData implements XliffElement {
 
     isValid(): boolean {
         if (this.dataItems.length === 0) {
+            this.errorReason = 'The <originalData> element must contain at least one <data> element';
             return false;
         }
         return true;
@@ -45,5 +47,9 @@ export class XliffOriginalData implements XliffElement {
             element.addElement(data.toElement());
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

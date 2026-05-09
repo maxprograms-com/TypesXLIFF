@@ -69,7 +69,7 @@ file.addUnit(unit2);
 doc.addFile(file);
 
 if (!doc.isValid()) {
-    console.error("Document is not valid.");
+    console.error(doc.getValidationError());
     process.exit(1);
 }
 

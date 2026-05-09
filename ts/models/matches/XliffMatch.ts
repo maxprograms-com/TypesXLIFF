@@ -41,6 +41,7 @@ export class XliffMatch implements XliffElement, ModuleElement {
     readonly otherElements: Array<XMLElement> = [];
     readonly otherAttributes: Array<XMLAttribute> = [];
     prefix?: string;
+    errorReason: string = '';
 
     constructor(ref: string) {
         this.ref = ref;
@@ -188,35 +189,45 @@ export class XliffMatch implements XliffElement, ModuleElement {
 
     isValid(): boolean {
         if (this.id !== undefined && (this.id.trim().length === 0 || /\s/.test(this.id))) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not valid';
             return false;
         }
         if (!isValidFragmentIdentifier(this.ref)) {
+            this.errorReason = 'The @ref attribute value "' + this.ref + '" is not valid';
             return false;
         }
         if (this.matchQuality !== undefined && !this.isValidPercentage(this.matchQuality)) {
+            this.errorReason = 'The @matchQuality attribute value "' + this.matchQuality + '" is not valid';
             return false;
         }
         if (this.matchSuitability !== undefined && !this.isValidPercentage(this.matchSuitability)) {
+            this.errorReason = 'The @matchSuitability attribute value "' + this.matchSuitability + '" is not valid';
             return false;
         }
         if (this.similarity !== undefined && !this.isValidPercentage(this.similarity)) {
+            this.errorReason = 'The @similarity attribute value "' + this.similarity + '" is not valid';
             return false;
         }
         if (this.subType !== undefined) {
             if (this.type === undefined) {
+                this.errorReason = 'The @subType attribute is defined but @type is undefined';
                 return false;
             }
             if (!this.subType.includes(':') || this.subType.startsWith(':') || this.subType.endsWith(':')) {
+                this.errorReason = 'The @subType attribute value "' + this.subType + '" is not valid';
                 return false;
             }
         }
         if (this.type !== undefined && !MATCH_TYPES.has(this.type)) {
+            this.errorReason = 'The @type attribute value "' + this.type + '" is not valid';
             return false;
         }
         if (this.metadata !== undefined && !this.metadata.isValid()) {
+            this.errorReason = this.metadata.getValidationError();
             return false;
         }
         if (this.originalData !== undefined && !this.originalData.isValid()) {
+            this.errorReason = this.originalData.getValidationError();
             return false;
         }
         return true;
@@ -276,5 +287,9 @@ export class XliffMatch implements XliffElement, ModuleElement {
 
     getNamespacePrefix(): string | undefined {
         return this.prefix;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

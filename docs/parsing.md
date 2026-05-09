@@ -74,7 +74,7 @@ Every model element exposes `isValid()` to check structural correctness:
 
 ```typescript
 if (!doc.isValid()) {
-    console.error('Document is not valid');
+    console.error(doc.getValidationError());
 }
 ```
 

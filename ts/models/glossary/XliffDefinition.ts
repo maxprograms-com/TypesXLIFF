@@ -21,6 +21,7 @@ export class XliffDefinition implements XliffElement, ModuleElement {
     source?: string;
     readonly otherAttributes: Array<XMLAttribute> = [];
     prefix?: string;
+    errorReason: string = '';
 
     constructor(text?: string) {
         if (text !== undefined) {
@@ -68,6 +69,7 @@ export class XliffDefinition implements XliffElement, ModuleElement {
 
     isValid(): boolean {
         if (this.text.length === 0) {
+            this.errorReason = 'Text is required in a <definition> element';
             return false;
         }
         return true;
@@ -88,8 +90,12 @@ export class XliffDefinition implements XliffElement, ModuleElement {
     setNamespacePrefix(prefix: string): void {
         this.prefix = prefix;
     }
-    
+
     getNamespacePrefix(): string | undefined {
         return this.prefix;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

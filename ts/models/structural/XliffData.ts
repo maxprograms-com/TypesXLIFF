@@ -21,6 +21,7 @@ export class XliffData implements XliffElement {
     id: string;
     dir?: XliffDirection;
     xmlSpace?: XliffDataXmlSpace;
+    errorReason: string = '';
     readonly content: Array<string | XliffCp> = [];
 
     constructor(id: string) {
@@ -70,12 +71,15 @@ export class XliffData implements XliffElement {
 
     isValid(): boolean {
         if (!XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not a valid NMTOKEN';
             return false;
         }
         if (this.dir !== undefined && this.dir !== "auto") {
+            this.errorReason = 'The @dir attribute value "' + this.dir + '" is not valid';
             return false;
         }
         if (this.xmlSpace !== undefined && this.xmlSpace !== "preserve") {
+            this.errorReason = 'The @xml:space attribute value "' + this.xmlSpace + '" is not valid';
             return false;
         }
         return true;
@@ -98,5 +102,9 @@ export class XliffData implements XliffElement {
             }
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

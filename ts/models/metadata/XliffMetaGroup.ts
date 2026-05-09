@@ -24,6 +24,7 @@ export class XliffMetaGroup implements XliffElement, ModuleElement {
     appliesTo?: XliffMetaGroupAppliesTo;
     readonly items: Array<XliffMetaGroup | XliffMeta> = [];
     prefix?: string;
+    errorReason: string = '';
 
     constructor(id?: string, category?: string) {
         this.id = id;
@@ -73,19 +74,23 @@ export class XliffMetaGroup implements XliffElement, ModuleElement {
 
     isValid(): boolean {
         if (this.id !== undefined && !XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not valid';
             return false;
         }
         if (this.appliesTo !== undefined
             && this.appliesTo !== "source"
             && this.appliesTo !== "target"
             && this.appliesTo !== "ignorable") {
+            this.errorReason = 'The @appliesTo attribute value "' + this.appliesTo + '" is not valid';
             return false;
         }
         if (this.items.length === 0) {
+            this.errorReason = 'The <metaGroup> element must contain at least one <meta> or <metaGroup> element';
             return false;
         }
         for (const item of this.items) {
             if (!item.isValid()) {
+                this.errorReason = item.getValidationError();
                 return false;
             }
         }
@@ -115,5 +120,9 @@ export class XliffMetaGroup implements XliffElement, ModuleElement {
 
     getNamespacePrefix(): string | undefined {
         return this.prefix;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

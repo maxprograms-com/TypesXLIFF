@@ -30,6 +30,7 @@ export class XliffMrk implements XliffElement {
     type?: XliffAnnotationType;
     ref?: string;
     value?: string;
+    errorReason: string = '';
     readonly content: Array<string | XliffCp | XliffPh | XliffPc | XliffSc | XliffEc | XliffMrk | XliffSm | XliffEm> = [];
     readonly otherAttributes: Array<XMLAttribute> = [];
 
@@ -142,20 +143,25 @@ export class XliffMrk implements XliffElement {
 
     isValid(): boolean {
         if (!XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not a valid NMTOKEN';
             return false;
         }
         if (this.translate !== undefined && this.translate !== 'yes' && this.translate !== 'no') {
+            this.errorReason = 'The @translate attribute value "' + this.translate + '" is not valid';
             return false;
         }
         if (this.type !== undefined && this.type !== 'generic' && this.type !== 'comment' && this.type !== 'term') {
             if (!this.type.includes(':') || this.type.startsWith(':') || this.type.endsWith(':')) {
+                this.errorReason = 'The @type attribute value "' + this.type + '" is not valid';
                 return false;
             }
         }
         if (this.type === 'comment' && this.value === undefined && this.ref === undefined) {
+            this.errorReason = 'The @type attribute value is "comment" but both @value and @ref are missing';
             return false;
         }
         if (this.ref !== undefined && !isValidFragmentIdentifier(this.ref)) {
+            this.errorReason = 'The @ref attribute value "' + this.ref + '" is not a valid fragment identifier';
             return false;
         }
         return true;
@@ -186,5 +192,9 @@ export class XliffMrk implements XliffElement {
             }
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

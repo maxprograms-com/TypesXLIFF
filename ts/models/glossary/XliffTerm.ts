@@ -20,6 +20,7 @@ export class XliffTerm implements XliffElement, ModuleElement {
     text: string = '';
     source?: string;
     prefix?: string;
+    errorReason: string = '';
     readonly otherAttributes: Array<XMLAttribute> = [];
 
     constructor(text?: string) {
@@ -68,6 +69,7 @@ export class XliffTerm implements XliffElement, ModuleElement {
 
     isValid(): boolean {
         if (this.text.length === 0) {
+            this.errorReason = 'The <term> element must have non-empty text content';
             return false;
         }
         return true;
@@ -91,5 +93,9 @@ export class XliffTerm implements XliffElement, ModuleElement {
 
     getNamespacePrefix(): string | undefined {
         return this.prefix;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

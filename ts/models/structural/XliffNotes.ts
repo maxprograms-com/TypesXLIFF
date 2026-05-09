@@ -17,6 +17,7 @@ import type { XliffNote } from "./XliffNote.js";
 export class XliffNotes implements XliffElement {
 
     readonly elementName: string = "notes";
+    errorReason: string = '';
     readonly notes: Array<XliffNote> = [];
 
     getNotes(): Array<XliffNote> {
@@ -34,6 +35,7 @@ export class XliffNotes implements XliffElement {
 
     isValid(): boolean {
         if (this.notes.length === 0) {
+            this.errorReason = 'The <notes> element must contain at least one <note> element';
             return false;
         }
         return true;
@@ -45,5 +47,9 @@ export class XliffNotes implements XliffElement {
             element.addElement(note.toElement());
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

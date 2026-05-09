@@ -33,6 +33,7 @@ export class XliffFile implements XliffElement {
     skeleton?: XliffSkeleton;
     notes?: XliffNotes;
     metadata?: XliffMetadata;
+    errorReason: string = '';
     readonly entries: Array<XliffUnit | XliffGroup> = [];
     readonly otherElements: Array<XMLElement> = [];
     readonly otherAttributes: Array<XMLAttribute> = [];
@@ -179,26 +180,33 @@ export class XliffFile implements XliffElement {
 
     isValid(): boolean {
         if (!XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'Invalid @id attribute value';
             return false;
         }
         if (this.canResegment !== undefined && !(this.canResegment === "yes" || this.canResegment === "no")) {
+            this.errorReason = 'The @canResegment attribute value "' + this.canResegment + '" is not valid';
             return false;
         }
         if (this.translate !== undefined && !(this.translate === "yes" || this.translate === "no")) {
+            this.errorReason = 'The @translate attribute value "' + this.translate + '" is not valid';
             return false;
         }
         if (this.srcDir !== undefined && !(this.srcDir === "ltr" || this.srcDir === "rtl" || this.srcDir === "auto")) {
+            this.errorReason = 'The @srcDir attribute value "' + this.srcDir + '" is not valid';
             return false;
         }
         if (this.trgDir !== undefined && !(this.trgDir === "ltr" || this.trgDir === "rtl" || this.trgDir === "auto")) {
+            this.errorReason = 'The @trgDir attribute value "' + this.trgDir + '" is not valid';
             return false;
         }
         if (this.xmlSpace !== undefined && !(this.xmlSpace === "preserve" || this.xmlSpace === "default")) {
+            this.errorReason = 'The @xml:space attribute value "' + this.xmlSpace + '" is not valid';
             return false;
         }
         for (const otherAttribute of this.otherAttributes) {
             const parts: Array<string> = otherAttribute.getName().split(':');
             if (parts.length !== 2 || !XMLUtils.isValidNMTOKEN(parts[0]) || !XMLUtils.isValidNMTOKEN(parts[1])) {
+                this.errorReason = 'Invalid @' + otherAttribute.getName() + ' attribute value';
                 return false;
             }
         }
@@ -209,6 +217,7 @@ export class XliffFile implements XliffElement {
                     continue;
                 }
                 if (noteIds.has(note.id)) {
+                    this.errorReason = 'Duplicate @id attribute value "' + note.id + '" found';
                     return false;
                 }
                 noteIds.add(note.id);
@@ -226,6 +235,7 @@ export class XliffFile implements XliffElement {
                         continue;
                     }
                     if (noteIds.has(note.id)) {
+                        this.errorReason = 'Duplicate @id attribute value "' + note.id + '" found';
                         return false;
                     }
                     noteIds.add(note.id);
@@ -243,12 +253,14 @@ export class XliffFile implements XliffElement {
                 continue;
             }
             if (ids.has(group.id)) {
+                this.errorReason = 'Duplicate @id attribute value "' + group.id + '" found';
                 return false;
             }
             ids.add(group.id);
             pending.push(...group.entries.filter((entry): entry is XliffGroup => 'entries' in entry));
         }
         if (this.entries.length === 0) {
+            this.errorReason = 'The <file> element must contain at least one <unit> or <group> element';
             return false;
         }
         let hasUnit: boolean = false;
@@ -266,6 +278,7 @@ export class XliffFile implements XliffElement {
             break;
         }
         if (!hasUnit) {
+            this.errorReason = 'The <file> element must contain at least one <unit> element';
             return false;
         }
         return true;
@@ -311,5 +324,9 @@ export class XliffFile implements XliffElement {
             element.addElement(entry.toElement());
         }
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }

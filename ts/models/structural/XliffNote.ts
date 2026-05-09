@@ -24,6 +24,7 @@ export class XliffNote implements XliffElement {
     category?: string;
     priority?: XliffNotePriority;
     ref?: string;
+    errorReason: string = '';
     readonly otherAttributes: Array<XMLAttribute> = [];
 
     constructor(id?: string) {
@@ -102,23 +103,29 @@ export class XliffNote implements XliffElement {
 
     isValid(): boolean {
         if (this.id !== undefined && !XMLUtils.isValidNMTOKEN(this.id)) {
+            this.errorReason = 'The @id attribute value "' + this.id + '" is not valid';
             return false;
         }
         if (this.appliesTo !== undefined && !(this.appliesTo === "source" || this.appliesTo === "target")) {
+            this.errorReason = 'The @appliesTo attribute value "' + this.appliesTo + '" is not valid';
             return false;
         }
         if (this.priority !== undefined && !Number.isInteger(this.priority)) {
+            this.errorReason = 'The @priority attribute value "' + this.priority + '" is not valid';
             return false;
         }
         if (this.priority !== undefined && (this.priority < 1 || this.priority > 10)) {
+            this.errorReason = 'The @priority attribute value "' + this.priority + '" is out of range';
             return false;
         }
         if (this.ref !== undefined && !isValidFragmentIdentifier(this.ref)) {
+            this.errorReason = 'The @ref attribute value "' + this.ref + '" is not valid';
             return false;
         }
         for (const otherAttribute of this.otherAttributes) {
             const parts: Array<string> = otherAttribute.getName().split(':');
             if (parts.length !== 2 || !XMLUtils.isValidNMTOKEN(parts[0]) || !XMLUtils.isValidNMTOKEN(parts[1])) {
+                this.errorReason = 'The @' + otherAttribute.getName() + ' attribute value "' + otherAttribute.getValue() + '" is not valid';
                 return false;
             }
         }
@@ -147,5 +154,9 @@ export class XliffNote implements XliffElement {
         }
         element.addString(this.text);
         return element;
+    }
+
+    getValidationError(): string {
+        return this.errorReason;
     }
 }
