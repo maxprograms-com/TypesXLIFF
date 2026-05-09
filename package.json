@@ -1,7 +1,7 @@
 {
   "name": "typesxliff",
   "productName": "TypesXLIFF",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "TypeScript library for creating, loading, querying, and writing XLIFF 2.x documents",
   "keywords": [
     "XLIFF",
@@ -22,7 +22,7 @@
     "url": "https://maxprograms.com",
     "email": "rmraya@maxprograms.com"
   },
-  "license": "SEE LICENSE.md",
+  "license": "EPL-1.0",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
