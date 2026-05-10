@@ -14,6 +14,7 @@ import { XMLAttribute, XMLElement, XMLUtils } from "typesxml";
 import { XliffElement } from "../XliffElement.js";
 import { isValidFragmentIdentifier } from "../XliffFragment.js";
 import type { XliffNoteAppliesTo, XliffNotePriority } from "../XliffTypes.js";
+import { NamespaceUtils } from "../namespaceUtils.js";
 
 export class XliffNote implements XliffElement {
 
@@ -123,6 +124,13 @@ export class XliffNote implements XliffElement {
             return false;
         }
         for (const otherAttribute of this.otherAttributes) {
+            if (otherAttribute.getName().startsWith('xmlns:')) {
+                if (!new NamespaceUtils().isValidNamespace(otherAttribute.getValue())) {
+                    this.errorReason = 'The @' + otherAttribute.getName() + ' attribute value "' + otherAttribute.getValue() + '" is not valid';
+                    return false;
+                }
+                continue;
+            }
             const parts: Array<string> = otherAttribute.getName().split(':');
             if (parts.length !== 2 || !XMLUtils.isValidNMTOKEN(parts[0]) || !XMLUtils.isValidNMTOKEN(parts[1])) {
                 this.errorReason = 'The @' + otherAttribute.getName() + ' attribute value "' + otherAttribute.getValue() + '" is not valid';

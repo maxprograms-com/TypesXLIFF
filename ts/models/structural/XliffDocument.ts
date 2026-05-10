@@ -13,6 +13,7 @@
 import { LanguageUtils } from "typesbcp47";
 import { Indenter, TextNode, XMLAttribute, XMLDeclaration, XMLDocument, XMLElement, XMLUtils, XMLWriter } from "typesxml";
 import type { XliffMetadata } from "../metadata/XliffMetadata.js";
+import { NamespaceUtils } from "../namespaceUtils.js";
 import { XliffElement } from "../XliffElement.js";
 import type { XliffVersion, XliffXmlSpace } from "../XliffTypes.js";
 import type { XliffFile } from "./XliffFile.js";
@@ -127,6 +128,10 @@ export class XliffDocument implements XliffElement {
     }
 
     isValid(): boolean {
+        if (['1.0', '1.1', '1.2'].includes(this.version)) {
+            this.errorReason = 'XLIFF ' + this.version + ' is not supported';
+            return false;
+        }
         if (!(this.version === "2.0" || this.version === "2.1" || this.version === "2.2")) {
             this.errorReason = 'The @version attribute value "' + this.version + '" is not valid';
             return false;
@@ -143,16 +148,33 @@ export class XliffDocument implements XliffElement {
             this.errorReason = 'The <metadata> element is not valid: ' + this.metadata.getValidationError();
             return false;
         }
+        if (this.xmlSpace !== undefined && !(this.xmlSpace === 'preserve' || this.xmlSpace === 'default')) {
+            this.errorReason = 'The @xml:space attribute value "' + this.xmlSpace + '" is not valid';
+            return false;
+        }
         for (const otherAttribute of this.otherAttributes) {
+            if ('xml:space' === otherAttribute.getName()) {
+                continue;
+            }
+            if ('xmlns' === otherAttribute.getName()) {
+                if (!new NamespaceUtils().isXliffNamespace(otherAttribute.getValue())) {
+                    this.errorReason = 'The @xmlns attribute value "' + otherAttribute.getValue() + '" is not a valid XLIFF namespace';
+                    return false;
+                }
+                continue;
+            }
+            if (otherAttribute.getName().startsWith('xmlns:')) {
+                if (!new NamespaceUtils().isValidNamespace(otherAttribute.getValue())) {
+                    this.errorReason = 'The @' + otherAttribute.getName() + ' attribute value "' + otherAttribute.getValue() + '" is not valid';
+                    return false;
+                }
+                continue;
+            }
             const parts: Array<string> = otherAttribute.getName().split(':');
             if (parts.length !== 2 || !XMLUtils.isValidNMTOKEN(parts[0]) || !XMLUtils.isValidNMTOKEN(parts[1])) {
                 this.errorReason = 'The @' + otherAttribute.getName() + ' attribute value "' + otherAttribute.getValue() + '" is not valid';
                 return false;
             }
-        }
-        if (this.xmlSpace !== undefined && !(this.xmlSpace === 'preserve' || this.xmlSpace === 'default')) {
-            this.errorReason = 'The @xml:space attribute value "' + this.xmlSpace + '" is not valid';
-            return false;
         }
         if (this.files.length === 0) {
             this.errorReason = 'The <file> element is required';

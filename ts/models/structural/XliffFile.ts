@@ -12,6 +12,7 @@
 
 import { XMLAttribute, XMLElement, XMLUtils } from "typesxml";
 import type { XliffMetadata } from "../metadata/XliffMetadata.js";
+import { NamespaceUtils } from "../namespaceUtils.js";
 import { XliffElement } from "../XliffElement.js";
 import type { XliffDirection, XliffXmlSpace, XliffYesNo } from "../XliffTypes.js";
 import type { XliffGroup } from "./XliffGroup.js";
@@ -204,6 +205,16 @@ export class XliffFile implements XliffElement {
             return false;
         }
         for (const otherAttribute of this.otherAttributes) {
+            if ('xml:space' === otherAttribute.getName()) {
+                continue;
+            }
+            if (otherAttribute.getName().startsWith('xmlns:')) {
+                if (!new NamespaceUtils().isValidNamespace(otherAttribute.getValue())) {
+                    this.errorReason = 'The @' + otherAttribute.getName() + ' attribute value "' + otherAttribute.getValue() + '" is not valid';
+                    return false;
+                }
+                continue;
+            }
             const parts: Array<string> = otherAttribute.getName().split(':');
             if (parts.length !== 2 || !XMLUtils.isValidNMTOKEN(parts[0]) || !XMLUtils.isValidNMTOKEN(parts[1])) {
                 this.errorReason = 'Invalid @' + otherAttribute.getName() + ' attribute value';

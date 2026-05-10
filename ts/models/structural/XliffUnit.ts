@@ -16,6 +16,7 @@ import type { XliffGlossEntry } from "../glossary/XliffGlossEntry.js";
 import type { XliffMatch } from "../matches/XliffMatch.js";
 import { XliffMatches } from "../matches/XliffMatches.js";
 import type { XliffMetadata } from "../metadata/XliffMetadata.js";
+import { NamespaceUtils } from "../namespaceUtils.js";
 import { XliffElement } from "../XliffElement.js";
 import type { XliffDirection, XliffXmlSpace, XliffYesNo } from "../XliffTypes.js";
 import type { XliffIgnorable } from "./XliffIgnorable.js";
@@ -251,16 +252,26 @@ export class XliffUnit implements XliffElement {
                 return false;
             }
         }
+        if (this.xmlSpace !== undefined && !(this.xmlSpace === 'preserve' || this.xmlSpace === 'default')) {
+            this.errorReason = 'The @xml:space attribute value "' + this.xmlSpace + '" is not valid';
+            return false;
+        }
         for (const otherAttribute of this.otherAttributes) {
+            if ('xml:space' === otherAttribute.getName()) {
+                continue;
+            }
+            if (otherAttribute.getName().startsWith('xmlns:')) {
+                if (!new NamespaceUtils().isValidNamespace(otherAttribute.getValue())) {
+                    this.errorReason = 'The @' + otherAttribute.getName() + ' attribute value "' + otherAttribute.getValue() + '" is not valid';
+                    return false;
+                }
+                continue;
+            }
             const parts: Array<string> = otherAttribute.getName().split(':');
             if (parts.length !== 2 || !XMLUtils.isValidNMTOKEN(parts[0]) || !XMLUtils.isValidNMTOKEN(parts[1])) {
                 this.errorReason = 'The @' + otherAttribute.getName() + ' attribute value "' + otherAttribute.getValue() + '" is not valid';
                 return false;
             }
-        }
-        if (this.xmlSpace !== undefined && !(this.xmlSpace === 'preserve' || this.xmlSpace === 'default')) {
-            this.errorReason = 'The @xml:space attribute value "' + this.xmlSpace + '" is not valid';
-            return false;
         }
         if (this.matches !== undefined && !this.matches.isValid()) {
             this.errorReason = this.matches.getValidationError();
