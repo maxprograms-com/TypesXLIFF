@@ -211,14 +211,16 @@ export class XliffDocument implements XliffElement {
                     continue;
                 }
                 for (const item of entry.items) {
-                    if (item.source !== undefined && item.source.xmlLang !== undefined && item.source.xmlLang !== this.srcLang) {
-                        this.errorReason = 'The @xml:lang attribute value "' + item.source.xmlLang + '" in <source> element does not match the @srcLang attribute value "' + this.srcLang + '" in the <xliff> element';
+                    const sourceXmlLang: string | undefined = item.source?.xmlLang;
+                    if (sourceXmlLang !== undefined && sourceXmlLang !== this.srcLang) {
+                        this.errorReason = 'The @xml:lang attribute value "' + sourceXmlLang + '" in <source> element does not match the @srcLang attribute value "' + this.srcLang + '" in the <xliff> element';
                         return false;
                     }
+                    const targetXmlLang: string | undefined = item.target?.xmlLang;
                     if (item.target !== undefined) {
                         hasTarget = true;
-                        if (item.target.xmlLang !== undefined && item.target.xmlLang !== this.trgLang) {
-                            this.errorReason = 'The @xml:lang attribute value "' + item.target.xmlLang + '" in <target> element does not match the @trgLang attribute value "' + this.trgLang + '" in the <xliff> element';
+                        if (targetXmlLang !== undefined && targetXmlLang !== this.trgLang) {
+                            this.errorReason = 'The @xml:lang attribute value "' + targetXmlLang + '" in <target> element does not match the @trgLang attribute value "' + this.trgLang + '" in the <xliff> element';
                             return false;
                         }
                     }

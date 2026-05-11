@@ -322,12 +322,13 @@ export class XliffUnit implements XliffElement {
         const orders: Set<number> = new Set<number>();
         const maxOrder: number = this.items.length;
         for (const item of this.items) {
-            if (item.target === undefined || item.target.order === undefined) {
+            const targetOrder: string | number | undefined = item.target?.order;
+            if (targetOrder === undefined) {
                 continue;
             }
-            const order: number = typeof item.target.order === "number" ? item.target.order : Number(item.target.order);
+            const order: number = typeof targetOrder === "number" ? targetOrder : Number(targetOrder);
             if (orders.has(order) || order > maxOrder) {
-                this.errorReason = 'The <items> element contains duplicate or invalid @order attribute value "' + item.target.order + '"';
+                this.errorReason = 'The <items> element contains duplicate or invalid @order attribute value "' + targetOrder + '"';
                 return false;
             }
             orders.add(order);

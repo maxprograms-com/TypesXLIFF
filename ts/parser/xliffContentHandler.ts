@@ -120,8 +120,8 @@ export class XliffContentHandler implements ContentHandler {
                     }
                     this.xliffDocument.setXmlSpace(xmlSpace as XliffXmlSpace);
                 }
-                let xliffAtts: Array<string> = ['version', 'srcLang', 'trgLang', 'xml:space'];
-                let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+                const xliffAtts: Set<string> = new Set<string>(['version', 'srcLang', 'trgLang', 'xml:space']);
+                let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
                 this.xliffDocument.setOtherAttributes(otherAtts);
                 this.xliffStack.push(this.xliffDocument);
             } else {
@@ -349,8 +349,8 @@ export class XliffContentHandler implements ContentHandler {
             file.setXmlSpace(xmlSpace as XliffXmlSpace);
         }
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts = ['id', 'original', 'canResegment', 'translate', 'srcDir', 'trgDir', 'xml:space'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['id', 'original', 'canResegment', 'translate', 'srcDir', 'trgDir', 'xml:space']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         file.setOtherAttributes(otherAtts);
         this.xliffDocument.addFile(file);
         this.xliffStack.push(file);
@@ -406,8 +406,8 @@ export class XliffContentHandler implements ContentHandler {
             group.setXmlSpace(xmlSpace as XliffXmlSpace);
         }
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts = ['id', 'name', 'canResegment', 'translate', 'srcDir', 'trgDir', 'type', 'xml:space'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['id', 'name', 'canResegment', 'translate', 'srcDir', 'trgDir', 'type', 'xml:space']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         group.setOtherAttributes(otherAtts);
         let parent = this.xliffStack[this.xliffStack.length - 1];
         if (parent instanceof XliffFile || parent instanceof XliffGroup) {
@@ -468,8 +468,8 @@ export class XliffContentHandler implements ContentHandler {
             unit.setType(type);
         }
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts: Array<string> = ['id', 'name', 'canResegment', 'translate', 'srcDir', 'trgDir', 'xml:space', 'type'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['id', 'name', 'canResegment', 'translate', 'srcDir', 'trgDir', 'xml:space', 'type']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         unit.setOtherAttributes(otherAtts);
         let parent = this.xliffStack[this.xliffStack.length - 1];
         if (!(parent instanceof XliffFile || parent instanceof XliffGroup)) {
@@ -597,8 +597,8 @@ export class XliffContentHandler implements ContentHandler {
             note.setRef(ref);
         }
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts: Array<string> = ['id', 'appliesTo', 'category', 'priority', 'ref'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['id', 'appliesTo', 'category', 'priority', 'ref']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         note.setOtherAttributes(otherAtts);
         let parent = this.xliffStack[this.xliffStack.length - 1];
         if (parent instanceof XliffNotes) {
@@ -728,8 +728,8 @@ export class XliffContentHandler implements ContentHandler {
         let id: string | undefined = element.getAttribute('id')?.getValue();
         let ref: string | undefined = element.getAttribute('ref')?.getValue();
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts = ['id', 'ref'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['id', 'ref']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         let glossEntry: XliffGlossEntry = new XliffGlossEntry(new XliffTerm());
         glossEntry.setNamespacePrefix(element.getNamespace());
         if (id !== undefined) {
@@ -751,8 +751,8 @@ export class XliffContentHandler implements ContentHandler {
     buildTerm(element: XMLElement) {
         let source: string | undefined = element.getAttribute('source')?.getValue();
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts = ['source'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['source']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         let term: XliffTerm = new XliffTerm();
         term.setNamespacePrefix(element.getNamespace());
         if (source !== undefined) {
@@ -773,8 +773,8 @@ export class XliffContentHandler implements ContentHandler {
         let ref: string | undefined = element.getAttribute('ref')?.getValue();
         let source: string | undefined = element.getAttribute('source')?.getValue();
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts = ['id', 'ref', 'source'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['id', 'ref', 'source']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         let translation: XliffTranslation = new XliffTranslation();
         translation.setNamespacePrefix(element.getNamespace());
         if (id !== undefined) {
@@ -799,8 +799,8 @@ export class XliffContentHandler implements ContentHandler {
     buildDefinition(element: XMLElement) {
         let source: string | undefined = element.getAttribute('source')?.getValue();
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts = ['source'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['source']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         let definition: XliffDefinition = new XliffDefinition();
         definition.setNamespacePrefix(element.getNamespace());
         if (source !== undefined) {
@@ -888,9 +888,9 @@ export class XliffContentHandler implements ContentHandler {
             ph.setType(type as XliffInlineType);
         }
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts: Array<string> = ['id', 'canCopy', 'canDelete', 'canReorder', 'copyOf', 'disp',
-            'equiv', 'dataRef', 'subFlows', 'subType', 'type'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['id', 'canCopy', 'canDelete', 'canReorder', 'copyOf', 'disp',
+            'equiv', 'dataRef', 'subFlows', 'subType', 'type']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         ph.setOtherAttributes(otherAtts);
         let parent = this.xliffStack[this.xliffStack.length - 1];
         if (parent instanceof XliffSource || parent instanceof XliffTarget || parent instanceof XliffPc
@@ -991,10 +991,10 @@ export class XliffContentHandler implements ContentHandler {
             pc.setDir(dir as XliffDirection);
         }
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts: Array<string> = ['id', 'canCopy', 'canDelete', 'canOverlap', 'canReorder', 'copyOf',
+        const xliffAtts: Set<string> = new Set<string>(['id', 'canCopy', 'canDelete', 'canOverlap', 'canReorder', 'copyOf',
             'dispEnd', 'dispStart', 'equivEnd', 'equivStart', 'dataRefEnd', 'dataRefStart', 'subFlowsEnd',
-            'subFlowsStart', 'subType', 'type', 'dir'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+            'subFlowsStart', 'subType', 'type', 'dir']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         pc.setOtherAttributes(otherAtts);
         let parent = this.xliffStack[this.xliffStack.length - 1];
         if (parent instanceof XliffSource || parent instanceof XliffTarget || parent instanceof XliffPc ||
@@ -1086,9 +1086,9 @@ export class XliffContentHandler implements ContentHandler {
             sc.setType(type as XliffInlineType);
         }
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts: Array<string> = ['id', 'canCopy', 'canDelete', 'canOverlap', 'canReorder', 'copyOf',
-            'dataRef', 'dir', 'disp', 'equiv', 'isolated', 'subFlows', 'subType', 'type'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['id', 'canCopy', 'canDelete', 'canOverlap', 'canReorder', 'copyOf',
+            'dataRef', 'dir', 'disp', 'equiv', 'isolated', 'subFlows', 'subType', 'type']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         sc.setOtherAttributes(otherAtts);
         let parent = this.xliffStack[this.xliffStack.length - 1];
         if (parent instanceof XliffSource || parent instanceof XliffTarget || parent instanceof XliffPc ||
@@ -1181,9 +1181,9 @@ export class XliffContentHandler implements ContentHandler {
             ec.setType(type as XliffInlineType);
         }
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts: Array<string> = ['startRef', 'id', 'canCopy', 'canDelete', 'canOverlap', 'canReorder',
-            'copyOf', 'dataRef', 'dir', 'disp', 'equiv', 'isolated', 'subFlows', 'subType', 'type'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['startRef', 'id', 'canCopy', 'canDelete', 'canOverlap', 'canReorder',
+            'copyOf', 'dataRef', 'dir', 'disp', 'equiv', 'isolated', 'subFlows', 'subType', 'type']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         ec.setOtherAttributes(otherAtts);
         let parent = this.xliffStack[this.xliffStack.length - 1];
         if (parent instanceof XliffSource || parent instanceof XliffTarget || parent instanceof XliffPc
@@ -1221,8 +1221,8 @@ export class XliffContentHandler implements ContentHandler {
             mrk.setValue(value);
         }
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts: Array<string> = ['id', 'translate', 'type', 'ref', 'value'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['id', 'translate', 'type', 'ref', 'value']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         mrk.setOtherAttributes(otherAtts);
         let parent = this.xliffStack[this.xliffStack.length - 1];
         if (parent instanceof XliffSource || parent instanceof XliffTarget || parent instanceof XliffPc ||
@@ -1260,8 +1260,8 @@ export class XliffContentHandler implements ContentHandler {
             sm.setValue(value);
         }
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts: Array<string> = ['id', 'translate', 'type', 'ref', 'value'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['id', 'translate', 'type', 'ref', 'value']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         sm.setOtherAttributes(otherAtts);
         let parent = this.xliffStack[this.xliffStack.length - 1];
         if (parent instanceof XliffSource || parent instanceof XliffTarget || parent instanceof XliffPc || parent instanceof XliffMrk) {
@@ -1347,9 +1347,9 @@ export class XliffContentHandler implements ContentHandler {
             match.setType(type as XliffMatchType);
         }
         let atts: Array<XMLAttribute> = element.getAttributes();
-        let xliffAtts: Array<string> = ['ref', 'id', 'matchQuality', 'matchSuitability', 'origin',
-            'reference', 'similarity', 'subType', 'type'];
-        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.includes(att.getName()));
+        const xliffAtts: Set<string> = new Set<string>(['ref', 'id', 'matchQuality', 'matchSuitability', 'origin',
+            'reference', 'similarity', 'subType', 'type']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
         match.setOtherAttributes(otherAtts);
         let parent = this.xliffStack[this.xliffStack.length - 1];
         if (parent instanceof XliffMatches) {
