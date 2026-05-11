@@ -231,10 +231,6 @@ export class XliffDocument implements XliffElement {
             this.errorReason = 'The @trgLang attribute is required when there are <target> elements';
             return false;
         }
-        if (!hasTarget && this.trgLang !== undefined) {
-            this.errorReason = 'The @trgLang attribute must not be set when there are no <target> elements';
-            return false;
-        }
         return true;
     }
 
