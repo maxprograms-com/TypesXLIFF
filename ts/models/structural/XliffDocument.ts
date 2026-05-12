@@ -188,13 +188,11 @@ export class XliffDocument implements XliffElement {
             }
             ids.add(file.id);
         }
-        const normalizedSrcLang: string | undefined = LanguageUtils.normalizeCode(this.srcLang);
-        if (normalizedSrcLang === undefined) {
+        if (!LanguageUtils.isValidLanguageTag(this.srcLang)) {
             this.errorReason = 'The @srcLang attribute value "' + this.srcLang + '" is not valid';
             return false;
         }
-        const normalizedTrgLang: string | undefined = this.trgLang !== undefined ? LanguageUtils.normalizeCode(this.trgLang) : undefined;
-        if (this.trgLang !== undefined && normalizedTrgLang === undefined) {
+        if (this.trgLang !== undefined && !LanguageUtils.isValidLanguageTag(this.trgLang)) {
             this.errorReason = 'The @trgLang attribute value "' + this.trgLang + '" is not valid';
             return false;
         }

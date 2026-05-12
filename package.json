@@ -1,7 +1,7 @@
 {
   "name": "typesxliff",
   "productName": "TypesXLIFF",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "TypeScript library for creating, loading, querying, and writing XLIFF 2.x documents",
   "keywords": [
     "XLIFF",
@@ -42,11 +42,11 @@
     "url": "https://github.com/maxprograms-com/TypesXLIFF.git"
   },
   "dependencies": {
-    "typesbcp47": "^1.22.0",
+    "typesbcp47": "^1.23.0",
     "typesxml": "^2.1.0"
   },
   "devDependencies": {
-    "@types/node": "^24.12.3",
+    "@types/node": "^24.12.4",
     "typescript": "^6.0.3"
   }
 }
