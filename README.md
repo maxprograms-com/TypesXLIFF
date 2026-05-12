@@ -48,7 +48,7 @@ console.log(segment?.source.toString());
 - [Parsing XLIFF Files](docs/parsing.md)
 - [Building XLIFF Documents](docs/building.md)
 - [JSON Conversion](docs/json.md)
-- [XLIFF Validation Example](https://github.com/maxprograms-com/xliff-validation) - Example project showing how to validate XLIFF files using TypesXLIFF
+- [XLIFF Validation Example](https://github.com/maxprograms-com/xliff-validation) - Complete command-line tool demonstrating XML Schema and semantic validation of XLIFF 2.x files using TypesXLIFF.
 
 ## Scope
 
