@@ -16,26 +16,31 @@
  *   npx ts-node docs/examples/01-parse-file.ts
  */
 
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { XliffParser, XliffDocument, XliffUnit, XliffSegment } from "typesxliff";
 
-const sampleFile = join(__dirname, "sample.xlf");
+const __filename: string = fileURLToPath(import.meta.url);
+const __dirname: string = dirname(__filename);
+const sampleFile: string = join(__dirname, "sample.xlf");
 
-const parser = new XliffParser();
+const parser: XliffParser = new XliffParser();
 parser.parseFile(sampleFile);
 
 const doc: XliffDocument | undefined = parser.getXliffDocument();
 if (!doc) {
     console.error("Failed to parse XLIFF file.");
     process.exit(1);
+    throw new Error("Failed to parse XLIFF file.");
 }
+const parsedDoc: XliffDocument = doc;
 
-console.log("Version     :", doc.getVersion());
-console.log("Source lang :", doc.getSrcLang());
-console.log("Target lang :", doc.getTrgLang() ?? "(none)");
+console.log("Version     :", parsedDoc.getVersion());
+console.log("Source lang :", parsedDoc.getSrcLang());
+console.log("Target lang :", parsedDoc.getTrgLang() ?? "(none)");
 console.log("");
 
-for (const file of doc.getFiles()) {
+for (const file of parsedDoc.getFiles()) {
     console.log("File:", file.getId());
 
     for (const entry of file.getEntries()) {
@@ -44,9 +49,9 @@ for (const file of doc.getFiles()) {
 
             for (const item of entry.getItems()) {
                 if (item instanceof XliffSegment) {
-                    const source = item.getSource();
-                    const target = item.getTarget();
-                    const state = item.getState() ?? "initial";
+                    const source: ReturnType<XliffSegment["getSource"]> = item.getSource();
+                    const target: ReturnType<XliffSegment["getTarget"]> = item.getTarget();
+                    const state: string = item.getState() ?? "initial";
 
                     console.log("    Segment:", item.getId() ?? "(no id)");
                     console.log("      State :", state);

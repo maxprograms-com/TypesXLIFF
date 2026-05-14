@@ -11,12 +11,14 @@ Load an XLIFF file and read the first source segment:
 import { XliffParser } from "typesxliff";
 
 const parser = new XliffParser();
-await parser.parseFile("file.xlf");
+parser.parseFile("file.xlf");
 
 const doc = parser.getXliffDocument();
-const segment = doc?.files[0].units[0].segments[0];
+const segment = doc?.getFiles()?.[0]?.getEntries()?.[0];
 
-console.log(segment?.source.toString());
+if (segment && "getItems" in segment) {
+    console.log(segment.getItems()[0]?.getSource()?.getContent().join(""));
+}
 ```
 
 ## Why TypesXLIFF
@@ -48,7 +50,7 @@ console.log(segment?.source.toString());
 - [Parsing XLIFF Files](docs/parsing.md)
 - [Building XLIFF Documents](docs/building.md)
 - [JSON Conversion](docs/json.md)
-- [XLIFF Validation Example](https://github.com/maxprograms-com/xliff-validation) - Complete command-line tool demonstrating XML Schema and semantic validation of XLIFF 2.x files using TypesXLIFF.
+- [XLIFF Validation Example](https://github.com/maxprograms-com/xliff-validation) - Companion command-line tool for strict XML Schema validation and end-to-end validation workflows. TypesXLIFF provides the object model and semantic validation methods used by that project.
 
 ## Scope
 
@@ -89,10 +91,10 @@ const file = new XliffFile("f1");
 const unit = new XliffUnit("u1");
 const segment = new XliffSegment("s1");
 const source = new XliffSource();
-source.addContent("Hello, world!");
+source.addText("Hello, world!");
 segment.setSource(source);
-unit.addItem(segment);
-file.addEntry(unit);
+unit.addSegment(segment);
+file.addUnit(unit);
 doc.addFile(file);
 
 doc.writeDocument('/path/to/output.xlf', true);

@@ -16,31 +16,34 @@
  *   npx ts-node docs/examples/02-build-document.ts
  */
 
-import * as path from "path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
     XliffDocument, XliffFile, XliffUnit, XliffSegment,
     XliffSource, XliffTarget, XliffNote
 } from "typesxliff";
 
-const outputFile = path.join(__dirname, "output.xlf");
+const __filename: string = fileURLToPath(import.meta.url);
+const __dirname: string = dirname(__filename);
+const outputFile: string = join(__dirname, "output.xlf");
 
 // Create a document: XLIFF version, source language, target language
-const doc = new XliffDocument("2.1", "en", "es");
+const doc: XliffDocument = new XliffDocument("2.1", "en", "es");
 
 // Create a file container
-const file = new XliffFile("f1");
+const file: XliffFile = new XliffFile("f1");
 
 // --- Unit 1: fully translated segment ---
-const unit1 = new XliffUnit("u1");
+const unit1: XliffUnit = new XliffUnit("u1");
 
-const segment1 = new XliffSegment();
+const segment1: XliffSegment = new XliffSegment();
 segment1.setState("translated");
 
-const source1 = new XliffSource();
+const source1: XliffSource = new XliffSource();
 source1.addText("Hello, world!");
 segment1.setSource(source1);
 
-const target1 = new XliffTarget();
+const target1: XliffTarget = new XliffTarget();
 target1.addText("¡Hola, mundo!");
 segment1.setTarget(target1);
 
@@ -48,17 +51,17 @@ unit1.addSegment(segment1);
 file.addUnit(unit1);
 
 // --- Unit 2: untranslated segment with a note ---
-const unit2 = new XliffUnit("u2");
+const unit2: XliffUnit = new XliffUnit("u2");
 
-const note = new XliffNote();
+const note: XliffNote = new XliffNote();
 note.setText("Needs review by native speaker.");
 note.setAppliesTo("target");
 unit2.addNote(note);
 
-const segment2 = new XliffSegment();
+const segment2: XliffSegment = new XliffSegment();
 segment2.setState("initial");
 
-const source2 = new XliffSource();
+const source2: XliffSource = new XliffSource();
 source2.addText("Welcome to TypesXLIFF.");
 segment2.setSource(source2);
 

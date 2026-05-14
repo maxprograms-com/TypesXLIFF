@@ -106,6 +106,10 @@ export class XliffTarget implements XliffElement {
             return false;
         }
         if (this.order !== undefined) {
+            if (typeof this.order === "string" && !/^[1-9][0-9]*$/.test(this.order)) {
+                this.errorReason = 'The @order attribute value "' + this.order + '" is not valid';
+                return false;
+            }
             const order: number = typeof this.order === "number" ? this.order : Number(this.order);
             if (!Number.isInteger(order) || order <= 0) {
                 this.errorReason = 'The @order attribute value "' + this.order + '" is not valid';

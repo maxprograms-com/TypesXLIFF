@@ -548,11 +548,22 @@ export class XliffContentHandler implements ContentHandler {
         }
         let xmlLang: string | undefined = element.getAttribute('xml:lang')?.getValue();
         let parent = this.xliffStack[this.xliffStack.length - 1];
+        let order: string | undefined = element.getAttribute('order')?.getValue();
+        let orderValue: number | undefined;
+        if (order !== undefined) {
+            if (!/^[1-9][0-9]*$/.test(order)) {
+                throw new Error('Invalid value for "order" attribute on <target> element: ' + order);
+            }
+            orderValue = Number(order);
+        }
         if (parent instanceof XliffSegment || parent instanceof XliffIgnorable || parent instanceof XliffMatch) {
             let target = new XliffTarget();
             target.setXmlSpace(xmlSpace as XliffXmlSpace | undefined);
             if (xmlLang !== undefined) {
                 target.setXmlLang(xmlLang);
+            }
+            if (orderValue !== undefined) {
+                target.setOrder(orderValue);
             }
             parent.setTarget(target);
             this.xliffStack.push(target);
@@ -576,7 +587,7 @@ export class XliffContentHandler implements ContentHandler {
         let id: string | undefined = element.getAttribute('id')?.getValue();
         let appliesTo: string | undefined = element.getAttribute('appliesTo')?.getValue();
         if (appliesTo !== undefined) {
-            if (appliesTo !== 'source' && appliesTo !== 'target' && appliesTo !== 'all') {
+            if (appliesTo !== 'source' && appliesTo !== 'target') {
                 throw new Error('Invalid value for "appliesTo" attribute on <note> element: ' + appliesTo);
             }
         }
@@ -1361,7 +1372,7 @@ export class XliffContentHandler implements ContentHandler {
     }
 
     getCurrentText(): string {
-         if (this.stack.length > 0) {
+        if (this.stack.length > 0) {
             return this.stack[this.stack.length - 1].pureText();
         }
         return '';

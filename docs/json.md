@@ -58,3 +58,18 @@ The conversion uses TypesXML's `"roundtrip"` mode, which preserves all XML const
 - CDATA sections
 
 This ensures that an XLIFF document converted to JSON and back produces an equivalent XML document.
+
+## target/@order Behavior
+
+For `target/@order`, TypesXLIFF enforces positive integer values without leading zeros.
+
+Examples:
+
+- Valid: `1`, `2`, `10`
+- Invalid: `0`, `01`, `1abc`
+
+When round-tripping (`XML -> JSON -> XLIFF -> XML`), valid `target/@order` values are preserved.
+
+## Runnable Example
+
+See [examples/03-json-roundtrip.ts](examples/03-json-roundtrip.ts) for a complete JSON round-trip flow that verifies `target/@order` values before and after reconstruction.
