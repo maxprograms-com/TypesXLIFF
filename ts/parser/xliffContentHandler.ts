@@ -10,7 +10,7 @@
  *     Maxprograms - initial API and implementation
  *************************************************************************** ***/
 
-import { Catalog, ContentHandler, Grammar, TextNode, XMLAttribute, XMLElement } from "typesxml";
+import { Catalog, ContentHandler, Grammar, ProcessingInstruction, TextNode, XMLAttribute, XMLElement } from "typesxml";
 import { XliffDefinition } from "../models/glossary/XliffDefinition.js";
 import { XliffGlossary } from "../models/glossary/XliffGlossary.js";
 import { XliffGlossEntry } from "../models/glossary/XliffGlossEntry.js";
@@ -272,7 +272,18 @@ export class XliffContentHandler implements ContentHandler {
     }
 
     processingInstruction(target: string, data: string): void {
-        // do nothing
+        if (this.xliffStack.length === 0) {
+            return;
+        }
+        let pi: ProcessingInstruction = new ProcessingInstruction(target, data);
+        let xliffParent: XliffElement = this.xliffStack[this.xliffStack.length - 1];
+        if (xliffParent instanceof XliffDocument) {
+            xliffParent.processingInstructions.push(pi);
+        } else if (xliffParent instanceof XliffFile) {
+            xliffParent.processingInstructions.push(pi);
+        } else if (xliffParent instanceof XliffUnit) {
+            xliffParent.processingInstructions.push(pi);
+        }
     }
 
     startCDATA(): void {

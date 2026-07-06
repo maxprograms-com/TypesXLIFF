@@ -11,7 +11,7 @@
  *************************************************************************** ***/
 
 import { LanguageUtils } from "typesbcp47";
-import { Indenter, TextNode, XMLAttribute, XMLDeclaration, XMLDocument, XMLElement, XMLUtils, XMLWriter } from "typesxml";
+import { Indenter, ProcessingInstruction, TextNode, XMLAttribute, XMLDeclaration, XMLDocument, XMLElement, XMLUtils, XMLWriter } from "typesxml";
 import type { XliffMetadata } from "../metadata/XliffMetadata.js";
 import { NamespaceUtils } from "../namespaceUtils.js";
 import { XliffElement } from "../XliffElement.js";
@@ -32,6 +32,7 @@ export class XliffDocument implements XliffElement {
     notes?: XliffNotes;
     metadata?: XliffMetadata;
     errorReason: string = '';
+    processingInstructions: Array<ProcessingInstruction> = [];
     readonly files: Array<XliffFile> = [];
     readonly otherAttributes: Array<XMLAttribute> = [];
 
@@ -254,6 +255,9 @@ export class XliffDocument implements XliffElement {
         for (const file of this.files) {
             element.addElement(file.toElement());
         }
+        for (const pi of this.processingInstructions) {
+            element.addProcessingInstruction(pi);
+        }
         return element;
     }
 
@@ -282,5 +286,13 @@ export class XliffDocument implements XliffElement {
 
     getValidationError(): string {
         return this.errorReason;
+    }
+
+    getPI(target: string): Array<ProcessingInstruction> {
+        return this.processingInstructions.filter((pi) => pi.getTarget() === target);
+    }
+
+    getPIs(): Array<ProcessingInstruction> {
+        return this.processingInstructions;
     }
 }

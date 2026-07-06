@@ -10,7 +10,7 @@
  *     Maxprograms - initial API and implementation
  *************************************************************************** ***/
 
-import { XMLAttribute, XMLElement, XMLUtils } from "typesxml";
+import { ProcessingInstruction, XMLAttribute, XMLElement, XMLUtils } from "typesxml";
 import { XliffGlossary } from "../glossary/XliffGlossary.js";
 import type { XliffGlossEntry } from "../glossary/XliffGlossEntry.js";
 import type { XliffMatch } from "../matches/XliffMatch.js";
@@ -42,6 +42,7 @@ export class XliffUnit implements XliffElement {
     metadata?: XliffMetadata;
     originalData?: XliffOriginalData;
     errorReason: string = '';
+    processingInstructions: Array<ProcessingInstruction> = [];
     readonly items: Array<XliffSegment | XliffIgnorable> = [];
     readonly otherElements: Array<XMLElement> = [];
     readonly otherAttributes: Array<XMLAttribute> = [];
@@ -392,10 +393,21 @@ export class XliffUnit implements XliffElement {
         for (const item of this.items) {
             element.addElement(item.toElement());
         }
+        for (const pi of this.processingInstructions) {
+            element.addProcessingInstruction(pi);
+        }
         return element;
     }
 
     getValidationError(): string {
         return this.errorReason;
+    }
+
+    getPI(target: string): Array<ProcessingInstruction> {
+        return this.processingInstructions.filter((pi) => pi.getTarget() === target);
+    }
+
+    getPIs(): Array<ProcessingInstruction> {
+        return this.processingInstructions;
     }
 }
