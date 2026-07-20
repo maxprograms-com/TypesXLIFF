@@ -508,6 +508,10 @@ export class XliffContentHandler implements ContentHandler {
         if (subState !== undefined) {
             segment.setSubState(subState);
         }
+        let atts: Array<XMLAttribute> = element.getAttributes();
+        const xliffAtts: Set<string> = new Set<string>(['id', 'canResegment', 'state', 'subState']);
+        let otherAtts: Array<XMLAttribute> = atts.filter(att => !xliffAtts.has(att.getName()));
+        segment.setOtherAttributes(otherAtts);
         let parent = this.xliffStack[this.xliffStack.length - 1];
         if (!(parent instanceof XliffUnit)) {
             throw new Error('<segment> element must be a child of <unit>');

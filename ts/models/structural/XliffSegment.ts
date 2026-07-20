@@ -11,6 +11,7 @@
  *************************************************************************** ***/
 
 import { XMLAttribute, XMLElement, XMLUtils } from "typesxml";
+import { NamespaceUtils } from "../namespaceUtils.js";
 import { XliffElement } from "../XliffElement.js";
 import type { XliffSegmentState, XliffYesNo } from "../XliffTypes.js";
 import type { XliffSource } from "./XliffSource.js";
@@ -26,6 +27,7 @@ export class XliffSegment implements XliffElement {
     source?: XliffSource;
     target?: XliffTarget;
     errorReason: string = '';
+    readonly otherAttributes: Array<XMLAttribute> = [];
 
     constructor(id?: string) {
         this.id = id;
@@ -79,6 +81,24 @@ export class XliffSegment implements XliffElement {
         this.target = target;
     }
 
+    getOtherAttributes(): Array<XMLAttribute> {
+        return this.otherAttributes;
+    }
+
+    setOtherAttributes(otherAttributes: Array<XMLAttribute>): void {
+        this.otherAttributes.length = 0;
+        this.otherAttributes.push(...otherAttributes);
+    }
+
+    setOtherAttribute(name: string, value: string): void {
+        const attribute: XMLAttribute | undefined = this.otherAttributes.find((item) => item.getName() === name);
+        if (attribute) {
+            attribute.setValue(value);
+            return;
+        }
+        this.otherAttributes.push(new XMLAttribute(name, value));
+    }
+
     isValid(): boolean {
         if (this.id !== undefined && !XMLUtils.isValidNMTOKEN(this.id)) {
             this.errorReason = 'The @id attribute value "' + this.id + '" is not valid';
@@ -107,6 +127,23 @@ export class XliffSegment implements XliffElement {
             this.errorReason = 'The <segment> element must contain a <target> element when @state is not "initial"';
             return false;
         }
+        for (const otherAttribute of this.otherAttributes) {
+            if ('xml:space' === otherAttribute.getName()) {
+                continue;
+            }
+            if (otherAttribute.getName().startsWith('xmlns:')) {
+                if (!new NamespaceUtils().isValidNamespace(otherAttribute.getValue())) {
+                    this.errorReason = 'The @' + otherAttribute.getName() + ' attribute value "' + otherAttribute.getValue() + '" is not valid';
+                    return false;
+                }
+                continue;
+            }
+            const parts: Array<string> = otherAttribute.getName().split(':');
+            if (parts.length !== 2 || !XMLUtils.isValidNMTOKEN(parts[0]) || !XMLUtils.isValidNMTOKEN(parts[1])) {
+                this.errorReason = 'The @' + otherAttribute.getName() + ' attribute value "' + otherAttribute.getValue() + '" is not valid';
+                return false;
+            }
+        }
         return true;
     }
 
@@ -123,6 +160,9 @@ export class XliffSegment implements XliffElement {
         }
         if (this.subState !== undefined) {
             element.setAttribute(new XMLAttribute('subState', this.subState));
+        }
+        for (const otherAttribute of this.otherAttributes) {
+            element.setAttribute(otherAttribute);
         }
         if (this.source) {
             element.addElement(this.source.toElement());
