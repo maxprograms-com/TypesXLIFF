@@ -1,5 +1,9 @@
 # TypesXLIFF
 
+[![npm version](https://img.shields.io/npm/v/typesxliff)](https://www.npmjs.com/package/typesxliff)
+[![npm license](https://img.shields.io/npm/l/typesxliff)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/implementation-native%20TypeScript-3178c6)](https://www.typescriptlang.org/)
+
 TypesXLIFF is a TypeScript / Node.js library for parsing, generating, and validating XLIFF 2.x files (2.0, 2.1 and 2.2). It includes a fully typed object model and JSON conversion for processing translation and localization data.
 
 ## Quick example
