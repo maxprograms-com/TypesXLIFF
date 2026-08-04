@@ -57,6 +57,7 @@ if (segment && "getItems" in segment) {
 - [JSON Conversion](docs/json.md)
 - [XLIFF Validation Example](https://github.com/maxprograms-com/xliff-validation) - Companion command-line tool for strict XML Schema validation and end-to-end validation workflows. TypesXLIFF provides the object model and semantic validation methods used by that project.
 - [TypesTerms](https://github.com/maxprograms-com/TypesTerms) - Companion library and command-line tool for extracting term candidates (monolingual) and bilingual translation pairs from XLIFF files using the YAKE algorithm. Built on top of TypesXLIFF for XLIFF parsing and object model access.
+- [XliffDeepl](https://github.com/maxprograms-com/XliffDeepl) - Companion command-line tool that translates XLIFF 2.1/2.2 files using the DeepL API, reading `srcLang`/`trgLang` and validating them via TypesXLIFF's object model. Supports DeepL glossaries and formality settings.
 
 ## Scope
 
