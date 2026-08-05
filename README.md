@@ -34,11 +34,11 @@ if (segment && "getItems" in segment) {
 
 ## Features
 
-- **Parse XLIFF files** — Load an existing XLIFF 2.x file into a fully typed object model using `XliffParser`
-- **Build programmatically** — Construct `XliffDocument` instances from scratch using the provided model classes
-- **Write XLIFF files** — Serialize any `XliffDocument` back to a well-formed XML file using `XliffDocument.writeDocument()`
-- **JSON round-trip** — Convert XLIFF ⇄ JSON (lossless) using `XliffToJson`, and reconstruct it back using `JsonToXliff`. Built on the round-trip JSON conversion provided by [TypesXML](https://github.com/rmraya/TypesXML)
-- **Validate** — Each model element exposes an `isValid()` method that checks structural and semantic constraints against the XLIFF 2.x specification
+- **Parse XLIFF files** - Load an existing XLIFF 2.x file into a fully typed object model using `XliffParser`
+- **Build programmatically** - Construct `XliffDocument` instances from scratch using the provided model classes
+- **Write XLIFF files** - Serialize any `XliffDocument` back to a well-formed XML file using `XliffDocument.writeDocument()`
+- **JSON round-trip** - Convert XLIFF ⇄ JSON (lossless) using `XliffToJson`, and reconstruct it back using `JsonToXliff`. Built on the round-trip JSON conversion provided by [TypesXML](https://github.com/rmraya/TypesXML)
+- **Validate** - Each model element exposes an `isValid()` method that checks structural and semantic constraints against the XLIFF 2.x specification
 
 ## Use cases
 
@@ -58,6 +58,7 @@ if (segment && "getItems" in segment) {
 - [XLIFF Validation Example](https://github.com/maxprograms-com/xliff-validation) - Companion command-line tool for strict XML Schema validation and end-to-end validation workflows. TypesXLIFF provides the object model and semantic validation methods used by that project.
 - [TypesTerms](https://github.com/maxprograms-com/TypesTerms) - Companion library and command-line tool for extracting term candidates (monolingual) and bilingual translation pairs from XLIFF files using the YAKE algorithm. Built on top of TypesXLIFF for XLIFF parsing and object model access.
 - [XliffDeepl](https://github.com/maxprograms-com/XliffDeepl) - Companion command-line tool that translates XLIFF 2.1/2.2 files using the DeepL API, reading `srcLang`/`trgLang` and validating them via TypesXLIFF's object model. Supports DeepL glossaries and formality settings.
+- [XliffAI](https://github.com/maxprograms-com/XliffAI) - Companion command-line tool and library that translates XLIFF 2.x files with AI, batching multiple segments per request with glossary terms, TM matches, and surrounding context. Supports ChatGPT, Claude, Gemini, Ollama, Mistral, Qwen, and Z.ai through a single engine interface. Proposed translations are added as `<mtc:match>` candidates via TypesXLIFF's object model rather than overwriting `<target>`.
 
 ## Scope
 
@@ -109,8 +110,8 @@ doc.writeDocument('/path/to/output.xlf', true);
 
 ## Dependencies
 
-- [TypesXML](https://github.com/rmraya/TypesXML) — XML object model and SAX parser
-- [TypesBCP47](https://github.com/rmraya/TypesBCP47) — BCP 47 language tag utilities
+- [TypesXML](https://github.com/rmraya/TypesXML) - XML object model and SAX parser
+- [TypesBCP47](https://github.com/rmraya/TypesBCP47) - BCP 47 language tag utilities
 
 ## Installation
 
